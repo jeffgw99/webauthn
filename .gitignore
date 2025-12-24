@@ -1,0 +1,8 @@
+node_modules
+npm-debug.log*
+server/node_modules
+client/node_modules
+server/dist
+client/dist
+server/data/*.tmp
+.DS_Store
