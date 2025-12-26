@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { startAuthentication, startRegistration } from '@simplewebauthn/browser';
 import type {
   AuthenticationResponseJSON,
@@ -201,6 +202,16 @@ function formatAlgorithms(
     .join(', ');
 }
 
+function randomToken(): string {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  let bin = '';
+  bytes.forEach((b) => {
+    bin += String.fromCharCode(b);
+  });
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
 type ServerState = {
   users: Record<string, { id: string; username: string; createdAt: string }>;
   credentials: Record<
@@ -231,6 +242,9 @@ function App() {
   const [debugOpen, setDebugOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [view, setView] = useState<'demo' | 'server'>('demo');
+  const [qrOpen, setQrOpen] = useState(false);
+  const [qrToken, setQrToken] = useState<string>('');
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   const [registrationOptions, setRegistrationOptions] =
     useState<PublicKeyCredentialCreationOptionsJSON | null>(null);
@@ -454,6 +468,21 @@ function App() {
                 {lastError}
               </span>
             )}
+            <button
+              onClick={() => {
+                setQrToken(randomToken());
+                setQrOpen(true);
+              }}
+              className="rounded-lg border border-yellow-700 bg-gray-900 px-3 py-2 text-xs text-yellow-200 transition hover:border-yellow-500"
+            >
+              Show QR to example.com
+            </button>
+            <button
+              onClick={() => setAboutOpen(true)}
+              className="rounded-lg border border-gray-800 bg-gray-900 px-3 py-2 text-xs text-gray-200 transition hover:border-yellow-500"
+            >
+              About this demo
+            </button>
           </div>
         </header>
 
@@ -726,6 +755,9 @@ function App() {
                 {Object.keys(serverState.users).length === 0 && (
                   <p className="text-sm text-gray-400">No users saved yet.</p>
                 )}
+                <div className="rounded-lg border border-gray-800 bg-gray-900/60 p-3">
+                  <DebugBlock title="Raw server JSON" data={serverState} />
+                </div>
                 {Object.entries(serverState.users).map(([userKey, user]) => {
                   const creds = serverState.credentials[userKey] ?? [];
                   const challenges = serverState.challenges[userKey];
@@ -737,8 +769,8 @@ function App() {
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="space-y-1">
                           <div className="text-sm font-semibold text-white">{user.username}</div>
-                          <div className="text-[11px] text-gray-400">
-                            ID: <span className="text-yellow-200 break-words">{truncate(user.id, 28)}</span>
+                          <div className="text-[11px] text-gray-400 break-words">
+                            ID: <span className="text-yellow-200">{user.id}</span>
                           </div>
                           <div className="text-[11px] text-gray-500">Created: {new Date(user.createdAt).toLocaleString()}</div>
                         </div>
@@ -768,9 +800,9 @@ function App() {
                             className="flex flex-col gap-1 rounded border border-gray-800 bg-gray-900/60 p-3 sm:flex-row sm:items-start sm:justify-between"
                           >
                             <div className="min-w-0 space-y-1">
-                              <div className="text-xs font-semibold text-yellow-200">
-                                ID: {truncate(cred.credentialID_b64url, 42)}
-                              </div>
+                                <div className="text-xs font-semibold text-yellow-200 break-words">
+                                  ID: {cred.credentialID_b64url}
+                                </div>
                               <div className="text-[11px] text-gray-400">
                                 Counter: {cred.counter} · Created: {new Date(cred.createdAt).toLocaleString()}
                               </div>
@@ -778,7 +810,7 @@ function App() {
                                 Last used: {new Date(cred.lastUsedAt).toLocaleString()}
                               </div>
                               <div className="text-[11px] text-gray-500">
-                                Transports: {cred.transports?.join(', ') || '—'} {cred.aaguid ? `· aaguid ${truncate(cred.aaguid, 18)}` : ''}
+                                  Transports: {cred.transports?.join(', ') || '—'} {cred.aaguid ? `· aaguid ${cred.aaguid}` : ''}
                               </div>
                             </div>
                             <button
@@ -801,6 +833,89 @@ function App() {
           </div>
         )}
       </div>
+      {qrOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+          <div className="relative max-w-3xl rounded-2xl border border-yellow-700 bg-gray-950 p-6 shadow-2xl shadow-yellow-500/20">
+            <button
+              onClick={() => setQrOpen(false)}
+              className="absolute right-3 top-3 rounded-full border border-gray-700 bg-gray-900 px-3 py-1 text-xs text-gray-200 transition hover:border-yellow-500"
+            >
+              Close
+            </button>
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-sm uppercase tracking-[0.2em] text-yellow-400">Demo QR</p>
+              <h3 className="text-xl font-semibold text-white">example.com</h3>
+              <p className="text-sm text-gray-400">One-time token appended as query param.</p>
+              <div className="text-center text-xs text-gray-500 break-words">
+                https://example.com/register?token={qrToken || '...'}
+              </div>
+              <div className="rounded-2xl bg-white p-6 shadow-lg">
+                <QRCodeCanvas
+                  value={`https://example.com/register?token=${qrToken || 'pending'}`}
+                  size={320}
+                  includeMargin
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setQrToken(randomToken())}
+                  className="rounded border border-yellow-700 bg-gray-900 px-3 py-2 text-xs text-yellow-200 transition hover:border-yellow-500"
+                >
+                  Generate new token
+                </button>
+                <span className="text-xs text-gray-400">Token: {qrToken || '…'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {aboutOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+          <div className="relative max-w-2xl rounded-2xl border border-yellow-700 bg-gray-950 p-6 shadow-2xl shadow-yellow-500/20">
+            <button
+              onClick={() => setAboutOpen(false)}
+              className="absolute right-3 top-3 rounded-full border border-gray-700 bg-gray-900 px-3 py-1 text-xs text-gray-200 transition hover:border-yellow-500"
+            >
+              Close
+            </button>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm uppercase tracking-[0.2em] text-yellow-400">About</p>
+                <h3 className="text-xl font-semibold text-white">Stack used in this demo</h3>
+              </div>
+              <div className="grid gap-3 text-sm text-gray-200 md:grid-cols-2">
+                <div className="rounded-lg border border-gray-800 bg-gray-900/60 p-3">
+                  <div className="text-yellow-300">Frontend</div>
+                  <ul className="mt-2 space-y-1 text-gray-300">
+                    <li>React 19 (Vite)</li>
+                    <li>Tailwind CSS</li>
+                    <li>@simplewebauthn/browser</li>
+                    <li>QR: qrcode.react + base64url token (crypto.getRandomValues) → https://example.com/register?token=…</li>
+                  </ul>
+                </div>
+                <div className="rounded-lg border border-gray-800 bg-gray-900/60 p-3">
+                  <div className="text-yellow-300">Backend</div>
+                  <ul className="mt-2 space-y-1 text-gray-300">
+                    <li>Node.js 20+</li>
+                    <li>Fastify 5</li>
+                    <li>@simplewebauthn/server</li>
+                    <li>TypeScript</li>
+                  </ul>
+                </div>
+                <div className="rounded-lg border border-gray-800 bg-gray-900/60 p-3 md:col-span-2">
+                  <div className="text-yellow-300">Data & tooling</div>
+                  <ul className="mt-2 space-y-1 text-gray-300">
+                    <li>JSON on disk: users, credentials, challenges</li>
+                    <li>Atomic writes + simple locking</li>
+                    <li>Vite dev server @5173, Fastify API @3000</li>
+                    <li>Concurrently for dual dev servers</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
