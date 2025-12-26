@@ -32,7 +32,9 @@ Extra debug endpoints/UI helpers:
 - `GET /debug/state` to inspect current JSON.
 - `POST /debug/remove-user { username }` removes the user + their credentials/challenges.
 - `POST /debug/remove-credential { username, credentialID }` removes a single credential.
-- The UI’s “Server JSON” panel lets you refresh and prune entries without leaving the page.
+- The UI has a dedicated **Server JSON** view to refresh and prune entries (and shows raw JSON).
+- A “Show QR to example.com” button opens a modal with a QR linking to `https://example.com/register?token=<generated-token>` (token generated client-side via `crypto.getRandomValues`, encoded base64url, rendered with `qrcode.react`).
+- An “About this demo” modal lists the stack (React/Vite/Tailwind, @simplewebauthn/browser, Fastify, @simplewebauthn/server, JSON persistence, concurrent dev, QR info).
 
 ## Notes
 - Frontend uses @simplewebauthn/browser for `startRegistration` / `startAuthentication`.
