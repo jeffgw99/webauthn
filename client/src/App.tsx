@@ -236,7 +236,7 @@ type ServerState = {
 };
 
 function App() {
-  const [username, setUsername] = useState('jeff');
+  const [username, setUsername] = useState('username');
   const [steps, setSteps] = useState<Record<StepKey, StepStatus>>(initialSteps);
   const [status, setStatus] = useState<'Ready' | 'Registered' | 'Logged in'>('Ready');
   const [lastError, setLastError] = useState<string | null>(null);
@@ -448,22 +448,14 @@ function App() {
   const regChallengeBytes = base64UrlByteLength(registrationOptions?.challenge);
   const authChallengeBytes = base64UrlByteLength(authOptions?.challenge);
   const regAlgs = formatAlgorithms(registrationOptions?.pubKeyCredParams);
-  const displayOrigin =
-    typeof window !== 'undefined' && window.location?.origin
-      ? window.location.origin
-      : 'http://localhost:5173';
-  const displayRPID = import.meta.env.VITE_RP_ID ?? 'Configured on server (RP_ID env)';
 
   return (
     <div className="min-h-screen bg-[#050505] text-gray-100">
-      <div className="mx-auto flex max-w-screen-2xl flex-col gap-8 px-6 py-10">
+      <div className="mx-auto flex max-w-screen-2xl flex-col gap-6 px-4 py-8 sm:gap-8 sm:px-6 sm:py-10">
         <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-yellow-400">WebAuthn Demo</p>
             <h1 className="text-3xl font-semibold text-white md:text-4xl">Passkey playground</h1>
-            <p className="text-sm text-gray-400">
-              Origin: {displayOrigin} • RP ID: {displayRPID}
-            </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <span className={`rounded-full px-4 py-2 text-sm font-semibold ${statusColor}`}>
@@ -474,21 +466,23 @@ function App() {
                 {lastError}
               </span>
             )}
-            <button
-              onClick={() => {
-                setQrToken(randomToken());
-                setQrOpen(true);
-              }}
-              className="rounded-lg border border-yellow-700 bg-gray-900 px-3 py-2 text-xs text-yellow-200 transition hover:border-yellow-500"
-            >
-              Show QR to example.com
-            </button>
-            <button
-              onClick={() => setAboutOpen(true)}
-              className="rounded-lg border border-gray-800 bg-gray-900 px-3 py-2 text-xs text-gray-200 transition hover:border-yellow-500"
-            >
-              About this demo
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => {
+                  setQrToken(randomToken());
+                  setQrOpen(true);
+                }}
+                className="rounded-lg border border-yellow-700 bg-gray-900 px-3 py-2 text-xs text-yellow-200 transition hover:border-yellow-500"
+              >
+                Show QR to example.com
+              </button>
+              <button
+                onClick={() => setAboutOpen(true)}
+                className="rounded-lg border border-gray-800 bg-gray-900 px-3 py-2 text-xs text-gray-200 transition hover:border-yellow-500"
+              >
+                About this demo
+              </button>
+            </div>
           </div>
         </header>
 
@@ -516,10 +510,10 @@ function App() {
         </div>
 
         {view === 'demo' && (
-          <div className="grid gap-6 xl:grid-cols-[1.6fr,1fr]">
-          <div className="flex flex-col gap-6">
-            <section className="rounded-2xl border border-gray-900 bg-gray-950/80 p-5 shadow-xl shadow-yellow-500/5">
-              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="grid gap-5 xl:grid-cols-[1.6fr,1fr]">
+          <div className="flex flex-col gap-5">
+            <section className="rounded-2xl border border-gray-900 bg-gray-950/80 p-4 sm:p-5 shadow-xl shadow-yellow-500/5">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div className="flex-1 space-y-2">
                   <label className="text-sm text-gray-300">Username</label>
                   <input
@@ -529,7 +523,7 @@ function App() {
                     maxLength={32}
                   />
                   <p className="text-xs text-gray-500">
-                    Default: jeff • Allowed: letters, numbers, dot, dash, underscore. Data lives in
+                    Default: username • Allowed: letters, numbers, dot, dash, underscore. Data lives in
                     <span className="text-yellow-300"> /server/data/*.json</span>.
                   </p>
                 </div>
@@ -548,7 +542,7 @@ function App() {
                   >
                     Login with passkey
                   </button>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2 sm:flex-row">
                     <button
                       onClick={resetUI}
                       className="flex-1 rounded-lg border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-gray-200 transition hover:border-gray-700"
@@ -577,7 +571,7 @@ function App() {
               </ul>
             </section>
 
-            <section className="rounded-2xl border border-gray-900 bg-gray-950/80 p-5">
+            <section className="rounded-2xl border border-gray-900 bg-gray-950/80 p-4 sm:p-5">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-sm uppercase tracking-[0.2em] text-yellow-400">Ceremony steps</p>
