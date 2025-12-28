@@ -474,7 +474,7 @@ function App() {
                 }}
                 className="rounded-lg border border-yellow-700 bg-gray-900 px-3 py-2 text-xs text-yellow-200 transition hover:border-yellow-500"
               >
-                Show QR to example.com
+                Show QR to webauthn.jeffgw.com
               </button>
               <button
                 onClick={() => setAboutOpen(true)}
@@ -844,14 +844,14 @@ function App() {
             </button>
             <div className="flex flex-col items-center gap-4">
               <p className="text-sm uppercase tracking-[0.2em] text-yellow-400">Demo QR</p>
-              <h3 className="text-xl font-semibold text-white">example.com</h3>
+              <h3 className="text-xl font-semibold text-white">webauthn.jeffgw.com</h3>
               <p className="text-sm text-gray-400">One-time token appended as query param.</p>
               <div className="text-center text-xs text-gray-500 break-words">
-                https://example.com/register?token={qrToken || '...'}
+                https://webauthn.jeffgw.com/register?token={qrToken || '...'}
               </div>
               <div className="rounded-2xl bg-white p-6 shadow-lg">
                 <QRCodeCanvas
-                  value={`https://example.com/register?token=${qrToken || 'pending'}`}
+                  value={`https://webauthn.jeffgw.com/register?token=${qrToken || 'pending'}`}
                   size={320}
                   includeMargin
                 />
@@ -890,7 +890,7 @@ function App() {
                     <li>React 19 (Vite)</li>
                     <li>Tailwind CSS</li>
                     <li>@simplewebauthn/browser</li>
-                    <li>QR: qrcode.react + base64url token (crypto.getRandomValues) → https://example.com/register?token=…</li>
+                    <li>QR: qrcode.react + base64url token (crypto.getRandomValues) → https://webauthn.jeffgw.com/register?token=…</li>
                   </ul>
                 </div>
                 <div className="rounded-lg border border-gray-800 bg-gray-900/60 p-3">
