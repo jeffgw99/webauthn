@@ -36,6 +36,13 @@ Extra debug endpoints/UI helpers:
 - A “Show QR to example.com” button opens a modal with a QR linking to `https://example.com/register?token=<generated-token>` (token generated client-side via `crypto.getRandomValues`, encoded base64url, rendered with `qrcode.react`).
 - An “About this demo” modal lists the stack (React/Vite/Tailwind, @simplewebauthn/browser, Fastify, @simplewebauthn/server, JSON persistence, concurrent dev, QR info).
 
+## Deploying to another host
+- Server CORS and WebAuthn settings are env-configurable:
+  - `RP_ID` (default `localhost`)
+  - `ORIGINS` (comma-separated; defaults to `http://localhost:5173,https://webauthn.jeffgw.com`)
+- Client API base is configurable via `VITE_API_BASE` (default `http://localhost:3000`).
+- For a public host (e.g. `https://webauthn.jeffgw.com`), set `RP_ID=webauthn.jeffgw.com`, `ORIGINS=https://webauthn.jeffgw.com`, and point `VITE_API_BASE` to your API origin.
+
 ## Notes
 - Frontend uses @simplewebauthn/browser for `startRegistration` / `startAuthentication`.
 - Timeline shows each WebAuthn step; debug panel reveals sanitized JSON payloads.

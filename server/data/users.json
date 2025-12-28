@@ -1,3 +1,9 @@
 {
-  "users": {}
+  "users": {
+    "jeff": {
+      "id": "0b9cd192-8215-435e-9b02-6bcfa66ae90a",
+      "username": "jeff",
+      "createdAt": "2025-12-27T13:42:54.864Z"
+    }
+  }
 }

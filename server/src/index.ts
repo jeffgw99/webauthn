@@ -20,14 +20,23 @@ import {
 } from './storage';
 
 const rpName = 'WebAuthn Demo';
-const rpID = 'localhost';
-const expectedOrigin = 'http://localhost:5173';
-const port = 3000;
+const port = Number(process.env.PORT ?? 3000);
+
+const defaultOrigins = ['http://localhost:5173', 'https://webauthn.jeffgw.com'];
+const allowedOrigins = (process.env.ORIGINS ?? process.env.ALLOWED_ORIGINS)
+  ? (process.env.ORIGINS ?? process.env.ALLOWED_ORIGINS)!
+      .split(',')
+      .map((o) => o.trim())
+      .filter(Boolean)
+  : defaultOrigins;
+
+const rpID = process.env.RP_ID ?? 'localhost';
+const expectedOrigin = allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins;
 
 const app = Fastify({ logger: true });
 
 app.register(cors, {
-  origin: expectedOrigin,
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
 });
