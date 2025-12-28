@@ -1,3 +1,14 @@
 {
-  "challenges": {}
+  "challenges": {
+    "jeff": {
+      "registration": {
+        "challenge": "87r2plTPAP6RIjogXkYcR68rPrrK78kxgTRezrlYFik",
+        "createdAt": "2025-12-28T02:47:32.330Z"
+      },
+      "authentication": {
+        "challenge": "Cz23jVYSUFfco6uxHBTMhCFZi6wXGDUB5SOez2HwOLE",
+        "createdAt": "2025-12-28T02:47:37.574Z"
+      }
+    }
+  }
 }

@@ -20,7 +20,8 @@ type StepKey =
 
 type StepStatus = 'idle' | 'active' | 'done' | 'error';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
+// Default to same-origin for prod; override with VITE_API_BASE when needed locally.
+const API_BASE = import.meta.env.VITE_API_BASE ?? '';
 
 const stepsConfig: Record<
   StepKey,
@@ -447,6 +448,11 @@ function App() {
   const regChallengeBytes = base64UrlByteLength(registrationOptions?.challenge);
   const authChallengeBytes = base64UrlByteLength(authOptions?.challenge);
   const regAlgs = formatAlgorithms(registrationOptions?.pubKeyCredParams);
+  const displayOrigin =
+    typeof window !== 'undefined' && window.location?.origin
+      ? window.location.origin
+      : 'http://localhost:5173';
+  const displayRPID = import.meta.env.VITE_RP_ID ?? 'Configured on server (RP_ID env)';
 
   return (
     <div className="min-h-screen bg-[#050505] text-gray-100">
@@ -456,7 +462,7 @@ function App() {
             <p className="text-sm uppercase tracking-[0.2em] text-yellow-400">WebAuthn Demo</p>
             <h1 className="text-3xl font-semibold text-white md:text-4xl">Passkey playground</h1>
             <p className="text-sm text-gray-400">
-              Localhost only • RP ID: localhost • Origin: http://localhost:5173
+              Origin: {displayOrigin} • RP ID: {displayRPID}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
